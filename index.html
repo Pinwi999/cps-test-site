@@ -45,7 +45,7 @@
             <h2>Internet Speed Test</h2>
             <button id="speedTestBtn">Run Speed Test</button>
             <div id="loader" class="loader" style="display: none;"></div>
-            <p id="speedResult"></p>
+            <p id="speedResult">Results will appear here.</p>
         </div>
     </div>
 
@@ -104,8 +104,9 @@
             let ping = 0;
             let jitter = 0;
 
-            // Simulate changing internet speeds
+            // Simulate changing internet speeds with gradual updates
             let interval = setInterval(() => {
+                // Random fluctuations for test results
                 download = (Math.random() * 100).toFixed(2);
                 upload = (Math.random() * 50).toFixed(2);
                 ping = (Math.random() * 50).toFixed(2);
@@ -124,7 +125,7 @@
                     // Hide the loader after the test finishes
                     document.getElementById("loader").style.display = "none";
                 }
-            }, 300); // Update every 300ms (you can change the speed here)
+            }, 300); // Update every 300ms (you can adjust the frequency here)
 
         });
     </script>
