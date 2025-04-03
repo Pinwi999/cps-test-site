@@ -34,11 +34,11 @@
             padding: 10px;
             width: 80%;
         }
-        #pulseRate {
-            font-size: 24px;
-        }
         #wpm, #reactionTime, #cpsResult {
             font-size: 24px;
+        }
+        #speedResult {
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -54,7 +54,7 @@
     <!-- Internet Speed Test -->
     <h1>Internet Speed Test</h1>
     <button id="speedTestBtn">Run Speed Test</button>
-    <p id="speedResult"></p>
+    <div id="speedResult">Testing will show up here...</div>
 
     <!-- Hand-Eye Coordination Test -->
     <h1>Hand-Eye Coordination Test</h1>
@@ -89,20 +89,23 @@
         let timeLeft = 5;
         let isRunning = false;
 
+        function resetCpsTest() {
+            clicks = 0;
+            timeLeft = 5;
+            document.getElementById("clicks").textContent = clicks;
+            document.getElementById("timeLeft").textContent = timeLeft;
+            document.getElementById("clickBtn").disabled = false;
+            document.getElementById("cpsResult").textContent = "";
+        }
+
         document.getElementById("clickBtn").addEventListener("click", () => {
             if (isRunning) clicks++;
             document.getElementById("clicks").textContent = clicks;
         });
 
         document.getElementById("startBtn").addEventListener("click", () => {
-            clicks = 0;
-            timeLeft = 5;
+            resetCpsTest();
             isRunning = true;
-            document.getElementById("clicks").textContent = clicks;
-            document.getElementById("timeLeft").textContent = timeLeft;
-            document.getElementById("clickBtn").disabled = false;
-            document.getElementById("cpsResult").textContent = "";
-
             let timer = setInterval(() => {
                 timeLeft--;
                 document.getElementById("timeLeft").textContent = timeLeft;
@@ -135,11 +138,11 @@
         // Hand-Eye Coordination Test
         let score = 0, speed = 1000;
 
-        document.getElementById('startHandEyeBtn').addEventListener('click', () => {
+        function startHandEyeTest() {
             score = 0;
             document.getElementById('handEyeResult').textContent = "Score: " + score;
             createCircle();
-        });
+        }
 
         function createCircle() {
             const circle = document.createElement('div');
@@ -164,6 +167,8 @@
                 document.getElementById('handEyeResult').textContent = "Game Over! Final Score: " + score;
             }, speed);
         }
+
+        document.getElementById('startHandEyeBtn').addEventListener('click', startHandEyeTest);
 
         // Heartbeat or Pulse Test
         let clickCount = 0;
