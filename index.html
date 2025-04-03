@@ -3,51 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CPS & Speed Test</title>
+    <title>Multi-Test Website</title>
     <style>
-        body { text-align: center; font-family: Arial, sans-serif; background-color: #f2f2f2; padding: 40px; }
-        h1 { color: #333; margin-bottom: 10px; }
-        button { padding: 20px 50px; font-size: 18px; background-color: #4CAF50; color: white; border: none; border-radius: 50px; cursor: pointer; margin: 20px; transition: background-color 0.3s ease; }
-        button:disabled { background-color: #ddd; cursor: not-allowed; }
-        #timer { font-size: 36px; font-weight: bold; color: #333; margin-bottom: 10px; }
-        #clicks { font-size: 28px; font-weight: bold; color: #333; }
-        #cpsResult { margin-top: 20px; font-size: 24px; font-weight: bold; color: #4CAF50; }
-        #speedResult { margin-top: 20px; font-size: 18px; color: #333; }
-        .container { display: flex; justify-content: center; align-items: center; flex-direction: column; }
-        .test-container { display: flex; justify-content: center; align-items: center; flex-direction: column; margin-top: 40px; }
-        .test-container h2 { margin-bottom: 20px; font-size: 24px; }
-        /* Loading spinner styles */
-        .loader {
-            border: 8px solid #f3f3f3;
-            border-top: 8px solid #4CAF50;
-            border-radius: 50%;
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        .circle {
             width: 50px;
             height: 50px;
-            animation: spin 1.5s linear infinite;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+        }
+        #reactionBox {
+            width: 100px;
+            height: 100px;
+            background-color: gray;
             margin: 20px auto;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        input, #userInput {
+            font-size: 20px;
+            padding: 10px;
+            width: 80%;
+        }
+        #pulseRate {
+            font-size: 24px;
+        }
+        #wpm, #reactionTime, #cpsResult {
+            font-size: 24px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>CPS Test</h1>
-        <p>Click the button as fast as you can!</p>
-        <button id="clickBtn">Click Me!</button>
-        <p>Time Left: <span id="timeLeft">5</span>s</p>
-        <p>Clicks: <span id="clicks">0</span></p>
-        <p id="cpsResult"></p>
+    <!-- CPS Test -->
+    <h1>CPS Test</h1>
+    <button id="clickBtn" disabled>Click Me!</button>
+    <p>Time Left: <span id="timeLeft">5</span>s</p>
+    <p>Clicks: <span id="clicks">0</span></p>
+    <button id="startBtn">Start Test</button>
+    <p id="cpsResult"></p>
 
-        <div class="test-container">
-            <h2>Internet Speed Test</h2>
-            <button id="speedTestBtn">Run Speed Test</button>
-            <div id="loader" class="loader" style="display: none;"></div>
-            <p id="speedResult">Results will appear here.</p>
-        </div>
-    </div>
+    <!-- Internet Speed Test -->
+    <h1>Internet Speed Test</h1>
+    <button id="speedTestBtn">Run Speed Test</button>
+    <p id="speedResult"></p>
+
+    <!-- Hand-Eye Coordination Test -->
+    <h1>Hand-Eye Coordination Test</h1>
+    <p>Click the red circle as fast as you can!</p>
+    <button id="startHandEyeBtn">Start Test</button>
+    <p id="handEyeResult">Score: 0</p>
+
+    <!-- Heartbeat or Pulse Test -->
+    <h1>Heartbeat Test</h1>
+    <p>Click the button when you feel your pulse!</p>
+    <button id="pulseBtn">Click for Pulse</button>
+    <p>Your Pulse Rate: <span id="pulseRate">0</span> BPM</p>
+
+    <!-- Typing Speed Test -->
+    <h1>Typing Speed Test</h1>
+    <p>Type the following sentence as fast as you can:</p>
+    <div id="sentence"></div>
+    <input type="text" id="userInput" disabled>
+    <button id="startTypingBtn">Start Test</button>
+    <p id="wpm">WPM: 0</p>
+
+    <!-- Reaction Time Test -->
+    <h1>Reaction Time Test</h1>
+    <p>Click the square as fast as you can when it turns green!</p>
+    <div id="reactionBox"></div>
+    <button id="startReactionBtn">Start Test</button>
+    <p id="reactionTime">Your reaction time: 0ms</p>
 
     <script>
         // CPS Test
@@ -55,78 +89,142 @@
         let timeLeft = 5;
         let isRunning = false;
 
-        // Reset test after completion
-        function resetTest() {
+        document.getElementById("clickBtn").addEventListener("click", () => {
+            if (isRunning) clicks++;
+            document.getElementById("clicks").textContent = clicks;
+        });
+
+        document.getElementById("startBtn").addEventListener("click", () => {
             clicks = 0;
             timeLeft = 5;
-            isRunning = false;
+            isRunning = true;
             document.getElementById("clicks").textContent = clicks;
             document.getElementById("timeLeft").textContent = timeLeft;
             document.getElementById("clickBtn").disabled = false;
             document.getElementById("cpsResult").textContent = "";
-        }
-
-        document.getElementById("clickBtn").addEventListener("click", () => {
-            if (!isRunning) {
-                startTest();
-            }
-            clicks++;
-            document.getElementById("clicks").textContent = clicks;
-        });
-
-        function startTest() {
-            isRunning = true;
-            document.getElementById("clickBtn").disabled = false;
 
             let timer = setInterval(() => {
-                if (timeLeft > 0) {
-                    timeLeft--;
-                    document.getElementById("timeLeft").textContent = timeLeft;
-                }
+                timeLeft--;
+                document.getElementById("timeLeft").textContent = timeLeft;
                 if (timeLeft === 0) {
                     clearInterval(timer);
                     isRunning = false;
                     document.getElementById("clickBtn").disabled = true;
                     document.getElementById("cpsResult").textContent = "Your CPS: " + (clicks / 5).toFixed(2);
-                    // Reset after a small delay so you can try again
-                    setTimeout(resetTest, 2000);
                 }
             }, 1000);
-        }
+        });
 
         // Internet Speed Test
         document.getElementById("speedTestBtn").addEventListener("click", async () => {
-            // Show loading spinner
-            document.getElementById("loader").style.display = "inline-block";
             document.getElementById("speedResult").textContent = "Testing...";
-
-            let download = 0;
-            let upload = 0;
-            let ping = 0;
-            let jitter = 0;
-
-            // Simulate fluctuating internet speeds with gradual updates
-            let interval = setInterval(() => {
-                // Random fluctuations for test results
-                download = (Math.random() * 100).toFixed(2);
-                upload = (Math.random() * 50).toFixed(2);
-                ping = (Math.random() * 50).toFixed(2);
-                jitter = (Math.random() * 10).toFixed(2);
-
+            setTimeout(() => {
+                const download = (Math.random() * 100).toFixed(2);
+                const upload = (Math.random() * 50).toFixed(2);
+                const ping = (Math.random() * 50).toFixed(2);
+                const jitter = (Math.random() * 10).toFixed(2);
                 document.getElementById("speedResult").innerHTML = `
                     Download: ${download} Mbps<br>
                     Upload: ${upload} Mbps<br>
                     Ping: ${ping} ms<br>
                     Jitter: ${jitter} ms
                 `;
+            }, 2000);
+        });
 
-                // Stop the animation after 3 seconds
-                if (Math.random() > 0.9) {
-                    clearInterval(interval);
-                    // Hide the loader after the test finishes
-                    document.getElementById("loader").style.display = "none";
-                }
-            }, 300); // Update every 300ms (you can adjust the frequency here)
+        // Hand-Eye Coordination Test
+        let score = 0, speed = 1000;
+
+        document.getElementById('startHandEyeBtn').addEventListener('click', () => {
+            score = 0;
+            document.getElementById('handEyeResult').textContent = "Score: " + score;
+            createCircle();
+        });
+
+        function createCircle() {
+            const circle = document.createElement('div');
+            circle.classList.add('circle');
+            document.body.appendChild(circle);
+
+            let maxX = window.innerWidth - 50;
+            let maxY = window.innerHeight - 50;
+
+            circle.style.left = Math.random() * maxX + 'px';
+            circle.style.top = Math.random() * maxY + 'px';
+
+            circle.addEventListener('click', () => {
+                score++;
+                document.getElementById('handEyeResult').textContent = "Score: " + score;
+                speed = Math.max(500, speed - 50);
+                createCircle();
+            });
+
+            setTimeout(() => {
+                circle.remove();
+                document.getElementById('handEyeResult').textContent = "Game Over! Final Score: " + score;
+            }, speed);
+        }
+
+        // Heartbeat or Pulse Test
+        let clickCount = 0;
+
+        document.getElementById('pulseBtn').addEventListener('click', () => {
+            clickCount++;
+            document.getElementById('pulseRate').textContent = clickCount * 6; 
+        });
+
+        setInterval(() => {
+            clickCount = 0;
+            document.getElementById('pulseRate').textContent = '0';
+        }, 15000);
+
+        // Typing Speed Test
+        const sentences = [
+            "The quick brown fox jumps over the lazy dog.",
+            "Pack my box with five dozen liquor jugs.",
+            "How razorback-jumping frogs can level six piqued gymnasts."
+        ];
+
+        let startTime;
+
+        document.getElementById('startTypingBtn').addEventListener('click', () => {
+            const sentence = sentences[Math.floor(Math.random() * sentences.length)];
+            document.getElementById('sentence').textContent = sentence;
+            document.getElementById('userInput').disabled = false;
+            document.getElementById('userInput').value = '';
+            document.getElementById('userInput').focus();
+            document.getElementById('wpm').textContent = "WPM: 0";
+            startTime = Date.now();
+        });
+
+        document.getElementById('userInput').addEventListener('input', () => {
+            const sentence = document.getElementById('sentence').textContent;
+            if (document.getElementById('userInput').value === sentence) {
+                const timeTaken = (Date.now() - startTime) / 1000;
+                const words = document.getElementById('userInput').value.split(' ').length;
+                const wpm = Math.round(words / (timeTaken / 60));
+                document.getElementById('wpm').textContent = "WPM: " + wpm;
+            }
+        });
+
+        // Reaction Time Test
+        let startTimeReaction;
+
+        document.getElementById('startReactionBtn').addEventListener('click', () => {
+            document.getElementById('reactionTime').textContent = "Your reaction time: 0ms";
+            document.getElementById('reactionBox').style.backgroundColor = 'gray';
+            const delay = Math.random() * 5000 + 2000;
+            setTimeout(() => {
+                document.getElementById('reactionBox').style.backgroundColor = 'green';
+                startTimeReaction = Date.now();
+            }, delay);
+        });
+
+        document.getElementById('reactionBox').addEventListener('click', () => {
+            if (document.getElementById('reactionBox').style.backgroundColor === 'green') {
+                const reactionTime = Date.now() - startTimeReaction;
+                document.getElementById('reactionTime').textContent = "Your reaction time: " + reactionTime + "ms";
+            }
         });
     </script>
 </body>
