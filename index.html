@@ -16,6 +16,20 @@
         .container { display: flex; justify-content: center; align-items: center; flex-direction: column; }
         .test-container { display: flex; justify-content: center; align-items: center; flex-direction: column; margin-top: 40px; }
         .test-container h2 { margin-bottom: 20px; font-size: 24px; }
+        /* Loading spinner styles */
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #4CAF50;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1.5s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -30,6 +44,7 @@
         <div class="test-container">
             <h2>Internet Speed Test</h2>
             <button id="speedTestBtn">Run Speed Test</button>
+            <div id="loader" class="loader" style="display: none;"></div>
             <p id="speedResult"></p>
         </div>
     </div>
@@ -39,6 +54,17 @@
         let timeLeft = 5;
         let isRunning = false;
         let timer;
+
+        // Reset test
+        function resetTest() {
+            clicks = 0;
+            timeLeft = 5;
+            isRunning = false;
+            document.getElementById("clicks").textContent = clicks;
+            document.getElementById("timeLeft").textContent = timeLeft;
+            document.getElementById("clickBtn").disabled = false;
+            document.getElementById("cpsResult").textContent = "";
+        }
 
         document.getElementById("clickBtn").addEventListener("click", () => {
             if (!isRunning) {
@@ -50,12 +76,7 @@
 
         function startTest() {
             isRunning = true;
-            timeLeft = 5;
-            clicks = 0;
-            document.getElementById("clicks").textContent = clicks;
-            document.getElementById("timeLeft").textContent = timeLeft;
             document.getElementById("clickBtn").disabled = false;
-            document.getElementById("cpsResult").textContent = "";
 
             let timer = setInterval(() => {
                 if (timeLeft > 0) {
@@ -67,24 +88,44 @@
                     isRunning = false;
                     document.getElementById("clickBtn").disabled = true;
                     document.getElementById("cpsResult").textContent = "Your CPS: " + (clicks / 5).toFixed(2);
+                    // Reset after a small delay so you can try again
+                    setTimeout(resetTest, 2000);
                 }
             }, 1000);
         }
 
         document.getElementById("speedTestBtn").addEventListener("click", async () => {
+            // Show loading spinner
+            document.getElementById("loader").style.display = "inline-block";
             document.getElementById("speedResult").textContent = "Testing...";
-            setTimeout(() => {
-                const download = (Math.random() * 100).toFixed(2);
-                const upload = (Math.random() * 50).toFixed(2);
-                const ping = (Math.random() * 50).toFixed(2);
-                const jitter = (Math.random() * 10).toFixed(2);
+
+            let download = 0;
+            let upload = 0;
+            let ping = 0;
+            let jitter = 0;
+
+            // Simulate changing internet speeds
+            let interval = setInterval(() => {
+                download = (Math.random() * 100).toFixed(2);
+                upload = (Math.random() * 50).toFixed(2);
+                ping = (Math.random() * 50).toFixed(2);
+                jitter = (Math.random() * 10).toFixed(2);
+
                 document.getElementById("speedResult").innerHTML = `
                     Download: ${download} Mbps<br>
                     Upload: ${upload} Mbps<br>
                     Ping: ${ping} ms<br>
                     Jitter: ${jitter} ms
                 `;
-            }, 2000);
+
+                // Stop the animation after 3 seconds
+                if (Math.random() > 0.9) {
+                    clearInterval(interval);
+                    // Hide the loader after the test finishes
+                    document.getElementById("loader").style.display = "none";
+                }
+            }, 300); // Update every 300ms (you can change the speed here)
+
         });
     </script>
 </body>
