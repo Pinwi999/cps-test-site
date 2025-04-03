@@ -5,44 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CPS & Speed Test</title>
     <style>
-        body { text-align: center; font-family: Arial, sans-serif; padding: 20px; }
-        button { padding: 10px; font-size: 16px; margin: 5px; }
+        body { text-align: center; font-family: Arial, sans-serif; background-color: #f2f2f2; padding: 40px; }
+        h1 { color: #333; margin-bottom: 10px; }
+        button { padding: 20px 50px; font-size: 18px; background-color: #4CAF50; color: white; border: none; border-radius: 50px; cursor: pointer; margin: 20px; transition: background-color 0.3s ease; }
+        button:disabled { background-color: #ddd; cursor: not-allowed; }
+        #timer { font-size: 36px; font-weight: bold; color: #333; margin-bottom: 10px; }
+        #clicks { font-size: 28px; font-weight: bold; color: #333; }
+        #cpsResult { margin-top: 20px; font-size: 24px; font-weight: bold; color: #4CAF50; }
+        #speedResult { margin-top: 20px; font-size: 18px; color: #333; }
+        .container { display: flex; justify-content: center; align-items: center; flex-direction: column; }
+        .test-container { display: flex; justify-content: center; align-items: center; flex-direction: column; margin-top: 40px; }
+        .test-container h2 { margin-bottom: 20px; font-size: 24px; }
     </style>
 </head>
 <body>
-    <h1>CPS Test</h1>
-    <button id="clickBtn" disabled>Click Me!</button>
-    <p>Time Left: <span id="timeLeft">5</span>s</p>
-    <p>Clicks: <span id="clicks">0</span></p>
-    <button id="startBtn">Start Test</button>
-    <p id="cpsResult"></p>
+    <div class="container">
+        <h1>CPS Test</h1>
+        <p>Click the button as fast as you can!</p>
+        <button id="clickBtn">Click Me!</button>
+        <p>Time Left: <span id="timeLeft">5</span>s</p>
+        <p>Clicks: <span id="clicks">0</span></p>
+        <p id="cpsResult"></p>
 
-    <h1>Internet Speed Test</h1>
-    <button id="speedTestBtn">Run Speed Test</button>
-    <p id="speedResult"></p>
+        <div class="test-container">
+            <h2>Internet Speed Test</h2>
+            <button id="speedTestBtn">Run Speed Test</button>
+            <p id="speedResult"></p>
+        </div>
+    </div>
 
     <script>
         let clicks = 0;
         let timeLeft = 5;
         let isRunning = false;
         let timer;
-        
+
         document.getElementById("clickBtn").addEventListener("click", () => {
-            if (isRunning) clicks++;
+            if (!isRunning) {
+                startTest();
+            }
+            clicks++;
             document.getElementById("clicks").textContent = clicks;
         });
-        
-        document.getElementById("startBtn").addEventListener("click", () => {
-            clicks = 0;
-            timeLeft = 5;
+
+        function startTest() {
             isRunning = true;
+            timeLeft = 5;
+            clicks = 0;
             document.getElementById("clicks").textContent = clicks;
             document.getElementById("timeLeft").textContent = timeLeft;
             document.getElementById("clickBtn").disabled = false;
             document.getElementById("cpsResult").textContent = "";
-            
-            clearInterval(timer); // Clear any previous timers
-            timer = setInterval(() => {
+
+            let timer = setInterval(() => {
                 if (timeLeft > 0) {
                     timeLeft--;
                     document.getElementById("timeLeft").textContent = timeLeft;
@@ -54,8 +69,8 @@
                     document.getElementById("cpsResult").textContent = "Your CPS: " + (clicks / 5).toFixed(2);
                 }
             }, 1000);
-        });
-        
+        }
+
         document.getElementById("speedTestBtn").addEventListener("click", async () => {
             document.getElementById("speedResult").textContent = "Testing...";
             setTimeout(() => {
