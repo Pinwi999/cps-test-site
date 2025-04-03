@@ -25,6 +25,7 @@
         let clicks = 0;
         let timeLeft = 5;
         let isRunning = false;
+        let timer;
         
         document.getElementById("clickBtn").addEventListener("click", () => {
             if (isRunning) clicks++;
@@ -40,9 +41,12 @@
             document.getElementById("clickBtn").disabled = false;
             document.getElementById("cpsResult").textContent = "";
             
-            let timer = setInterval(() => {
-                timeLeft--;
-                document.getElementById("timeLeft").textContent = timeLeft;
+            clearInterval(timer); // Clear any previous timers
+            timer = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    document.getElementById("timeLeft").textContent = timeLeft;
+                }
                 if (timeLeft === 0) {
                     clearInterval(timer);
                     isRunning = false;
