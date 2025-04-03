@@ -50,12 +50,12 @@
     </div>
 
     <script>
+        // CPS Test
         let clicks = 0;
         let timeLeft = 5;
         let isRunning = false;
-        let timer;
 
-        // Reset test
+        // Reset test after completion
         function resetTest() {
             clicks = 0;
             timeLeft = 5;
@@ -94,6 +94,7 @@
             }, 1000);
         }
 
+        // Internet Speed Test
         document.getElementById("speedTestBtn").addEventListener("click", async () => {
             // Show loading spinner
             document.getElementById("loader").style.display = "inline-block";
@@ -104,7 +105,7 @@
             let ping = 0;
             let jitter = 0;
 
-            // Simulate changing internet speeds with gradual updates
+            // Simulate fluctuating internet speeds with gradual updates
             let interval = setInterval(() => {
                 // Random fluctuations for test results
                 download = (Math.random() * 100).toFixed(2);
@@ -126,7 +127,6 @@
                     document.getElementById("loader").style.display = "none";
                 }
             }, 300); // Update every 300ms (you can adjust the frequency here)
-
         });
     </script>
 </body>
