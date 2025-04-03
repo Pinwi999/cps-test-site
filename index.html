@@ -40,6 +40,12 @@
         #speedResult {
             margin-top: 10px;
         }
+        #handEyeTestArea {
+            margin: 20px;
+            width: 100%;
+            height: 300px;
+            position: relative;
+        }
     </style>
 </head>
 <body>
@@ -58,15 +64,9 @@
 
     <!-- Hand-Eye Coordination Test -->
     <h1>Hand-Eye Coordination Test</h1>
-    <p>Click the red circle as fast as you can!</p>
     <button id="startHandEyeBtn">Start Test</button>
+    <div id="handEyeTestArea"></div>
     <p id="handEyeResult">Score: 0</p>
-
-    <!-- Heartbeat or Pulse Test -->
-    <h1>Heartbeat Test</h1>
-    <p>Click the button when you feel your pulse!</p>
-    <button id="pulseBtn">Click for Pulse</button>
-    <p>Your Pulse Rate: <span id="pulseRate">0</span> BPM</p>
 
     <!-- Typing Speed Test -->
     <h1>Typing Speed Test</h1>
@@ -147,7 +147,7 @@
         function createCircle() {
             const circle = document.createElement('div');
             circle.classList.add('circle');
-            document.body.appendChild(circle);
+            document.getElementById('handEyeTestArea').appendChild(circle);
 
             let maxX = window.innerWidth - 50;
             let maxY = window.innerHeight - 50;
@@ -169,19 +169,6 @@
         }
 
         document.getElementById('startHandEyeBtn').addEventListener('click', startHandEyeTest);
-
-        // Heartbeat or Pulse Test
-        let clickCount = 0;
-
-        document.getElementById('pulseBtn').addEventListener('click', () => {
-            clickCount++;
-            document.getElementById('pulseRate').textContent = clickCount * 6; 
-        });
-
-        setInterval(() => {
-            clickCount = 0;
-            document.getElementById('pulseRate').textContent = '0';
-        }, 15000);
 
         // Typing Speed Test
         const sentences = [
