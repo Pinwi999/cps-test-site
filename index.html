@@ -220,6 +220,7 @@
                 document.getElementById('handEyeResult').textContent = "Score: " + score;
                 speed = Math.max(500, speed - 50);
                 createCircle();
+                circle.remove();  // Remove the circle only after it is clicked
             });
 
             setTimeout(() => {
@@ -260,38 +261,29 @@
         });
 
         // Reaction Time Test
-        let startTimeReaction;
+        let startTimeReaction, isBoxClicked = false;
 
         document.getElementById('startReactionBtn').addEventListener('click', () => {
-            document.getElementById('reactionTime').textContent = "Your reaction time: 0ms";
+            document.getElementById('reactionTime').textContent = "Wait for the box to turn green!";
             document.getElementById('reactionBox').style.backgroundColor = 'gray';
             document.getElementById('reactionBox').style.cursor = 'pointer';
-            
-            // Disable the reaction box before the green color appears
             document.getElementById('reactionBox').disabled = true;
 
-            // Random delay between 2 to 5 seconds
             const delay = Math.random() * 3000 + 2000;
 
-            // After the delay, change the box color to green
             setTimeout(() => {
                 document.getElementById('reactionBox').style.backgroundColor = 'green';
                 startTimeReaction = Date.now();
-
-                // Enable the reaction box after it turns green
                 document.getElementById('reactionBox').disabled = false;
             }, delay);
-
-            // Add a prompt before the test starts
-            document.getElementById('reactionTime').textContent = "Wait for the box to turn green!";
         });
 
         document.getElementById('reactionBox').addEventListener('click', () => {
-            if (document.getElementById('reactionBox').style.backgroundColor === 'green') {
+            if (!isBoxClicked && document.getElementById('reactionBox').style.backgroundColor === 'green') {
+                isBoxClicked = true;
                 const reactionTime = Date.now() - startTimeReaction;
                 document.getElementById('reactionTime').textContent = "Your reaction time: " + reactionTime + "ms";
-                
-                // Disable the reaction box after clicking it
+                document.getElementById('reactionBox').style.backgroundColor = 'gray';
                 document.getElementById('reactionBox').disabled = true;
             }
         });
