@@ -67,16 +67,7 @@
             margin: 20px 0;
             background-color: #e3e3e3;
             border-radius: 8px;
-        }
-
-        #speedResult, #wpm, #reactionTime, #cpsResult {
-            font-size: 18px;
-            margin-top: 15px;
-            color: #333;
-        }
-
-        #speedResult {
-            margin-top: 10px;
+            overflow: hidden;
         }
 
         #handEyeResult {
@@ -96,25 +87,6 @@
     </style>
 </head>
 <body>
-    <!-- CPS Test -->
-    <div class="test-container">
-        <h1>CPS Test</h1>
-        <p class="test-description">Click as fast as you can!</p>
-        <button id="clickBtn" disabled>Click Me!</button>
-        <p>Time Left: <span id="timeLeft">5</span>s</p>
-        <p>Clicks: <span id="clicks">0</span></p>
-        <button id="startBtn">Start Test</button>
-        <p id="cpsResult"></p>
-    </div>
-
-    <!-- Internet Speed Test -->
-    <div class="test-container">
-        <h1>Internet Speed Test</h1>
-        <p class="test-description">Check your internet speed, including ping and jitter.</p>
-        <button id="speedTestBtn">Run Speed Test</button>
-        <div id="speedResult">Testing will show up here...</div>
-    </div>
-
     <!-- Hand-Eye Coordination Test -->
     <div class="test-container">
         <h1>Hand-Eye Coordination Test</h1>
@@ -124,169 +96,52 @@
         <p id="handEyeResult">Score: 0</p>
     </div>
 
-    <!-- Typing Speed Test -->
-    <div class="test-container">
-        <h1>Typing Speed Test</h1>
-        <p class="test-description">Type the sentence as fast as you can!</p>
-        <div id="sentence"></div>
-        <input type="text" id="userInput" disabled>
-        <button id="startTypingBtn">Start Test</button>
-        <p id="wpm">WPM: 0</p>
-    </div>
-
-    <!-- Reaction Time Test -->
-    <div class="test-container">
-        <h1>Reaction Time Test</h1>
-        <p class="test-description">Click the square as fast as you can when it turns green!</p>
-        <div id="reactionBox"></div>
-        <button id="startReactionBtn">Start Test</button>
-        <p id="reactionTime">Your reaction time: 0ms</p>
-    </div>
-
     <script>
-        // CPS Test
-        let clicks = 0;
-        let timeLeft = 5;
-        let isRunning = false;
-
-        function resetCpsTest() {
-            clicks = 0;
-            timeLeft = 5;
-            document.getElementById("clicks").textContent = clicks;
-            document.getElementById("timeLeft").textContent = timeLeft;
-            document.getElementById("clickBtn").disabled = false;
-            document.getElementById("cpsResult").textContent = "";
-        }
-
-        document.getElementById("clickBtn").addEventListener("click", () => {
-            if (isRunning) clicks++;
-            document.getElementById("clicks").textContent = clicks;
-        });
-
-        document.getElementById("startBtn").addEventListener("click", () => {
-            resetCpsTest();
-            isRunning = true;
-            let timer = setInterval(() => {
-                timeLeft--;
-                document.getElementById("timeLeft").textContent = timeLeft;
-                if (timeLeft === 0) {
-                    clearInterval(timer);
-                    isRunning = false;
-                    document.getElementById("clickBtn").disabled = true;
-                    document.getElementById("cpsResult").textContent = "Your CPS: " + (clicks / 5).toFixed(2);
-                }
-            }, 1000);
-        });
-
-        // Internet Speed Test
-        document.getElementById("speedTestBtn").addEventListener("click", async () => {
-            document.getElementById("speedResult").textContent = "Testing...";
-            setTimeout(() => {
-                const download = (Math.random() * 100).toFixed(2);
-                const upload = (Math.random() * 50).toFixed(2);
-                const ping = (Math.random() * 50).toFixed(2);
-                const jitter = (Math.random() * 10).toFixed(2);
-                document.getElementById("speedResult").innerHTML = `
-                    Download: ${download} Mbps<br>
-                    Upload: ${upload} Mbps<br>
-                    Ping: ${ping} ms<br>
-                    Jitter: ${jitter} ms
-                `;
-            }, 2000);
-        });
-
         // Hand-Eye Coordination Test
-        let score = 0, speed = 1000;
+        let score = 0;
+        let speed = 1000;  // initial speed in ms
 
         function startHandEyeTest() {
             score = 0;
             document.getElementById('handEyeResult').textContent = "Score: " + score;
-            createCircle();
+            spawnDot();  // Start spawning dots immediately
         }
 
-        function createCircle() {
+        function spawnDot() {
+            const handEyeArea = document.getElementById('handEyeTestArea');
             const circle = document.createElement('div');
             circle.classList.add('circle');
-            document.getElementById('handEyeTestArea').appendChild(circle);
+            handEyeArea.appendChild(circle);
 
-            let maxX = window.innerWidth - 50;
-            let maxY = window.innerHeight - 50;
+            // Random position within the area
+            const maxX = handEyeArea.offsetWidth - circle.offsetWidth;
+            const maxY = handEyeArea.offsetHeight - circle.offsetHeight;
+            const posX = Math.random() * maxX;
+            const posY = Math.random() * maxY;
 
-            circle.style.left = Math.random() * maxX + 'px';
-            circle.style.top = Math.random() * maxY + 'px';
+            circle.style.left = posX + 'px';
+            circle.style.top = posY + 'px';
 
+            // Handle the click event on the dot
             circle.addEventListener('click', () => {
                 score++;
                 document.getElementById('handEyeResult').textContent = "Score: " + score;
-                speed = Math.max(500, speed - 50);
-                createCircle();
-                circle.remove();  // Remove the circle only after it is clicked
+                circle.remove();  // Remove the clicked dot
+
+                // Spawn a new dot after a short delay
+                setTimeout(spawnDot, speed);
             });
 
+            // If the dot isn't clicked in time, remove it after the timeout
             setTimeout(() => {
-                circle.remove();
-                document.getElementById('handEyeResult').textContent = "Game Over! Final Score: " + score;
+                if (circle.parentNode) {
+                    circle.remove();
+                }
             }, speed);
         }
 
         document.getElementById('startHandEyeBtn').addEventListener('click', startHandEyeTest);
 
-        // Typing Speed Test
-        const sentences = [
-            "The quick brown fox jumps over the lazy dog.",
-            "Pack my box with five dozen liquor jugs.",
-            "How razorback-jumping frogs can level six piqued gymnasts."
-        ];
-
-        let startTime;
-
-        document.getElementById('startTypingBtn').addEventListener('click', () => {
-            const sentence = sentences[Math.floor(Math.random() * sentences.length)];
-            document.getElementById('sentence').textContent = sentence;
-            document.getElementById('userInput').disabled = false;
-            document.getElementById('userInput').value = '';
-            document.getElementById('userInput').focus();
-            document.getElementById('wpm').textContent = "WPM: 0";
-            startTime = Date.now();
-        });
-
-        document.getElementById('userInput').addEventListener('input', () => {
-            const sentence = document.getElementById('sentence').textContent;
-            if (document.getElementById('userInput').value === sentence) {
-                const timeTaken = (Date.now() - startTime) / 1000;
-                const words = document.getElementById('userInput').value.split(' ').length;
-                const wpm = Math.round(words / (timeTaken / 60));
-                document.getElementById('wpm').textContent = "WPM: " + wpm;
-            }
-        });
-
-        // Reaction Time Test
-        let startTimeReaction, isBoxClicked = false;
-
-        document.getElementById('startReactionBtn').addEventListener('click', () => {
-            document.getElementById('reactionTime').textContent = "Wait for the box to turn green!";
-            document.getElementById('reactionBox').style.backgroundColor = 'gray';
-            document.getElementById('reactionBox').style.cursor = 'pointer';
-            document.getElementById('reactionBox').disabled = true;
-
-            const delay = Math.random() * 3000 + 2000;
-
-            setTimeout(() => {
-                document.getElementById('reactionBox').style.backgroundColor = 'green';
-                startTimeReaction = Date.now();
-                document.getElementById('reactionBox').disabled = false;
-            }, delay);
-        });
-
-        document.getElementById('reactionBox').addEventListener('click', () => {
-            if (!isBoxClicked && document.getElementById('reactionBox').style.backgroundColor === 'green') {
-                isBoxClicked = true;
-                const reactionTime = Date.now() - startTimeReaction;
-                document.getElementById('reactionTime').textContent = "Your reaction time: " + reactionTime + "ms";
-                document.getElementById('reactionBox').style.backgroundColor = 'gray';
-                document.getElementById('reactionBox').disabled = true;
-            }
-        });
     </script>
 </body>
 </html>
