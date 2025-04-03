@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPS & Speed Test</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; padding: 20px; }
+        button { padding: 10px; font-size: 16px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>CPS Test</h1>
+    <button id="clickBtn" disabled>Click Me!</button>
+    <p>Time Left: <span id="timeLeft">5</span>s</p>
+    <p>Clicks: <span id="clicks">0</span></p>
+    <button id="startBtn">Start Test</button>
+    <p id="cpsResult"></p>
+
+    <h1>Internet Speed Test</h1>
+    <button id="speedTestBtn">Run Speed Test</button>
+    <p id="speedResult"></p>
+
+    <script>
+        let clicks = 0;
+        let timeLeft = 5;
+        let isRunning = false;
+        
+        document.getElementById("clickBtn").addEventListener("click", () => {
+            if (isRunning) clicks++;
+            document.getElementById("clicks").textContent = clicks;
+        });
+        
+        document.getElementById("startBtn").addEventListener("click", () => {
+            clicks = 0;
+            timeLeft = 5;
+            isRunning = true;
+            document.getElementById("clicks").textContent = clicks;
+            document.getElementById("timeLeft").textContent = timeLeft;
+            document.getElementById("clickBtn").disabled = false;
+            document.getElementById("cpsResult").textContent = "";
+            
+            let timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById("timeLeft").textContent = timeLeft;
+                if (timeLeft === 0) {
+                    clearInterval(timer);
+                    isRunning = false;
+                    document.getElementById("clickBtn").disabled = true;
+                    document.getElementById("cpsResult").textContent = "Your CPS: " + (clicks / 5).toFixed(2);
+                }
+            }, 1000);
+        });
+        
+        document.getElementById("speedTestBtn").addEventListener("click", async () => {
+            document.getElementById("speedResult").textContent = "Testing...";
+            setTimeout(() => {
+                const download = (Math.random() * 100).toFixed(2);
+                const upload = (Math.random() * 50).toFixed(2);
+                const ping = (Math.random() * 50).toFixed(2);
+                const jitter = (Math.random() * 10).toFixed(2);
+                document.getElementById("speedResult").innerHTML = `
+                    Download: ${download} Mbps<br>
+                    Upload: ${upload} Mbps<br>
+                    Ping: ${ping} ms<br>
+                    Jitter: ${jitter} ms
+                `;
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
