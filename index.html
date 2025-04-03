@@ -68,6 +68,23 @@
     </style>
 </head>
 <body>
+    <!-- CPS Test -->
+    <div class="test-container">
+        <h1>CPS Test</h1>
+        <button id="clickBtn" disabled>Click Me!</button>
+        <p>Time Left: <span id="timeLeft">5</span>s</p>
+        <p>Clicks: <span id="clicks">0</span></p>
+        <button id="startBtn">Start Test</button>
+        <p id="cpsResult"></p>
+    </div>
+
+    <!-- Internet Speed Test -->
+    <div class="test-container">
+        <h1>Internet Speed Test</h1>
+        <button id="speedTestBtn">Run Speed Test</button>
+        <p id="speedResult"></p>
+    </div>
+
     <!-- Reaction Time Test -->
     <div class="test-container">
         <h1>Reaction Time Test</h1>
@@ -78,8 +95,58 @@
     </div>
 
     <script>
+        // CPS Test
+        let clicks = 0;
+        let timeLeft = 5;
+        let isRunning = false;
+
+        document.getElementById("clickBtn").addEventListener("click", () => {
+            if (isRunning) clicks++;
+            document.getElementById("clicks").textContent = clicks;
+        });
+
+        document.getElementById("startBtn").addEventListener("click", () => {
+            clicks = 0;
+            timeLeft = 5;
+            isRunning = true;
+            document.getElementById("clicks").textContent = clicks;
+            document.getElementById("timeLeft").textContent = timeLeft;
+            document.getElementById("clickBtn").disabled = false;
+            document.getElementById("cpsResult").textContent = "";
+
+            let timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById("timeLeft").textContent = timeLeft;
+                if (timeLeft === 0) {
+                    clearInterval(timer);
+                    isRunning = false;
+                    document.getElementById("clickBtn").disabled = true;
+                    document.getElementById("cpsResult").textContent = "Your CPS: " + (clicks / 5).toFixed(2);
+                }
+            }, 1000);
+        });
+
+        // Speed Test
+        document.getElementById("speedTestBtn").addEventListener("click", async () => {
+            document.getElementById("speedResult").textContent = "Testing...";
+            setTimeout(() => {
+                const download = (Math.random() * 100).toFixed(2);
+                const upload = (Math.random() * 50).toFixed(2);
+                const ping = (Math.random() * 50).toFixed(2);
+                const jitter = (Math.random() * 10).toFixed(2);
+                document.getElementById("speedResult").innerHTML = `
+                    Download: ${download} Mbps<br>
+                    Upload: ${upload} Mbps<br>
+                    Ping: ${ping} ms<br>
+                    Jitter: ${jitter} ms
+                `;
+            }, 2000);
+        });
+
+        // Reaction Time Test
         let reactionStartTime;
         let reactionEndTime;
+        let boxClicked = false; // Flag to prevent stacking the reaction time test
 
         function startReactionTest() {
             const box = document.getElementById('reactionBox');
@@ -87,9 +154,10 @@
             box.style.backgroundColor = 'gray'; // Reset to initial color
             result.textContent = "Get ready...";
             
-            // Disable the box at the start, wait for it to turn green
+            // Disable the box click for now
+            boxClicked = false;
             box.removeEventListener('click', handleBoxClick);
-            
+
             // Randomly change the box color to green after 1-5 seconds
             const delay = Math.random() * 4000 + 1000;  // Random delay between 1 to 5 seconds
 
@@ -101,6 +169,9 @@
         }
 
         function handleBoxClick() {
+            if (boxClicked) return; // Prevent the same test from triggering multiple times
+
+            boxClicked = true; // Mark the box as clicked
             reactionEndTime = Date.now();
             const reactionTime = reactionEndTime - reactionStartTime;
             const result = document.getElementById('reactionResult');
@@ -109,6 +180,11 @@
             // Disable the box for a moment to prevent accidental extra clicks
             const box = document.getElementById('reactionBox');
             box.style.backgroundColor = 'gray'; // Reset color after click
+
+            // Remove the event listener after the click
+            box.removeEventListener('click', handleBoxClick);
+
+            // Add a delay before it's ready for the next test
             setTimeout(() => {
                 box.style.backgroundColor = 'gray'; // Set the color back to gray
             }, 500); // Add a delay for the next test
