@@ -51,25 +51,6 @@
             border-radius: 5px;
         }
 
-        .circle {
-            width: 50px;
-            height: 50px;
-            background-color: red;
-            border-radius: 50%;
-            position: absolute;
-            cursor: pointer;
-        }
-
-        #handEyeTestArea {
-            width: 100%;
-            height: 300px;
-            position: relative;
-            margin: 20px 0;
-            background-color: #e3e3e3;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
         #handEyeResult {
             font-size: 20px;
             color: #333;
@@ -87,61 +68,53 @@
     </style>
 </head>
 <body>
-    <!-- Hand-Eye Coordination Test -->
+    <!-- Reaction Time Test -->
     <div class="test-container">
-        <h1>Hand-Eye Coordination Test</h1>
-        <p class="test-description">Click on the moving red dots as quickly as possible!</p>
-        <button id="startHandEyeBtn">Start Test</button>
-        <div id="handEyeTestArea"></div>
-        <p id="handEyeResult">Score: 0</p>
+        <h1>Reaction Time Test</h1>
+        <p class="test-description">Click the box as fast as you can when it turns green!</p>
+        <button id="startReactionBtn">Start Test</button>
+        <div id="reactionBox"></div>
+        <p id="reactionResult">Your reaction time will appear here.</p>
     </div>
 
     <script>
-        // Hand-Eye Coordination Test
-        let score = 0;
-        let speed = 1000;  // initial speed in ms
+        let reactionStartTime;
+        let reactionEndTime;
 
-        function startHandEyeTest() {
-            score = 0;
-            document.getElementById('handEyeResult').textContent = "Score: " + score;
-            spawnDot();  // Start spawning dots immediately
-        }
+        function startReactionTest() {
+            const box = document.getElementById('reactionBox');
+            const result = document.getElementById('reactionResult');
+            box.style.backgroundColor = 'gray'; // Reset to initial color
+            result.textContent = "Get ready...";
+            
+            // Disable the box at the start, wait for it to turn green
+            box.removeEventListener('click', handleBoxClick);
+            
+            // Randomly change the box color to green after 1-5 seconds
+            const delay = Math.random() * 4000 + 1000;  // Random delay between 1 to 5 seconds
 
-        function spawnDot() {
-            const handEyeArea = document.getElementById('handEyeTestArea');
-            const circle = document.createElement('div');
-            circle.classList.add('circle');
-            handEyeArea.appendChild(circle);
-
-            // Random position within the area
-            const maxX = handEyeArea.offsetWidth - circle.offsetWidth;
-            const maxY = handEyeArea.offsetHeight - circle.offsetHeight;
-            const posX = Math.random() * maxX;
-            const posY = Math.random() * maxY;
-
-            circle.style.left = posX + 'px';
-            circle.style.top = posY + 'px';
-
-            // Handle the click event on the dot
-            circle.addEventListener('click', () => {
-                score++;
-                document.getElementById('handEyeResult').textContent = "Score: " + score;
-                circle.remove();  // Remove the clicked dot
-
-                // Spawn a new dot after a short delay
-                setTimeout(spawnDot, speed);
-            });
-
-            // If the dot isn't clicked in time, remove it after the timeout
             setTimeout(() => {
-                if (circle.parentNode) {
-                    circle.remove();
-                }
-            }, speed);
+                box.style.backgroundColor = 'green';
+                reactionStartTime = Date.now(); // Start the timer when it turns green
+                box.addEventListener('click', handleBoxClick); // Enable clicking once the box is green
+            }, delay);
         }
 
-        document.getElementById('startHandEyeBtn').addEventListener('click', startHandEyeTest);
+        function handleBoxClick() {
+            reactionEndTime = Date.now();
+            const reactionTime = reactionEndTime - reactionStartTime;
+            const result = document.getElementById('reactionResult');
+            result.textContent = "Your reaction time: " + reactionTime + "ms";
 
+            // Disable the box for a moment to prevent accidental extra clicks
+            const box = document.getElementById('reactionBox');
+            box.style.backgroundColor = 'gray'; // Reset color after click
+            setTimeout(() => {
+                box.style.backgroundColor = 'gray'; // Set the color back to gray
+            }, 500); // Add a delay for the next test
+        }
+
+        document.getElementById('startReactionBtn').addEventListener('click', startReactionTest);
     </script>
 </body>
 </html>
